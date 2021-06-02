@@ -8,12 +8,20 @@ import (
 	"os"
 )
 
-type Word struct {
-	Text string `json:"text"`
+type Definition struct {
+	Text         string `json:"text"`
+	PartOfSpeech string `json:"partOfSpeech"`
+}
+
+var abbreviations = map[string]string{
+	"noun":            "n.",
+	"verb":            "v.",
+	"transitive verb": "v.",
+	"adjective":       "adj.",
 }
 
 func main() {
-	if len(os.Args) < 1 {
+	if len(os.Args) < 2 {
 		fmt.Print("\nPlease pass in a word to define.\n\n  grok <word>\n\n")
 		return
 	}
@@ -32,10 +40,20 @@ func main() {
 		panic("Error while reading response")
 	}
 
-	var words []Word
-	err = json.Unmarshal(body, &words)
+	var definitions []Definition
+	err = json.Unmarshal(body, &definitions)
 	if err != nil {
 		panic("Error parsing json")
 	}
-	fmt.Printf("%v", words[0].Text)
+	fmt.Printf("\n%v\n\n", word)
+	for i := 0; i < len(definitions) && i <= 3; i++ {
+		if len(definitions[i].Text) == 0 {
+			continue
+		}
+		fmt.Printf("%v\n\n", formatDefintion((definitions[i])))
+	}
+}
+
+func formatDefintion(defintion Definition) string {
+	return fmt.Sprintf("%-*v%v", 6, abbreviations[defintion.PartOfSpeech], defintion.Text)
 }
