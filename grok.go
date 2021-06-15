@@ -28,6 +28,10 @@ func main() {
 
 	word := os.Args[1]
 	apiKey := os.Getenv("WORDNIK_API")
+	if apiKey == "" {
+		panic("WORDNIK_API variable not found")
+	}
+
 	url := fmt.Sprintf("http://api.wordnik.com/v4/word.json/%v/definitions?api_key=%v", word, apiKey)
 
 	res, err := http.Get(url)
