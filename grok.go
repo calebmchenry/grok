@@ -20,6 +20,14 @@ var abbreviations = map[string]string{
 	"adjective":       "adj.",
 }
 
+func green(msg string) string {
+	return fmt.Sprintf("\033[32m%v\033[0m", msg)
+}
+
+func red(msg string) string {
+	return fmt.Sprintf("\033[31m%v\033[0m", msg)
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Print("\nPlease pass in a word to define.\n\n  grok <word>\n\n")
@@ -44,7 +52,7 @@ func main() {
 		os.Exit(1)
 	}
 	if res.StatusCode > 400 {
-		fmt.Printf("Could not find %v.\n", word)
+		fmt.Printf("Could not find %v.\n", red(word))
 		os.Exit(1)
 	}
 	defer res.Body.Close()
@@ -60,7 +68,7 @@ func main() {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	fmt.Printf("\n%v\n\n", word)
+	fmt.Printf("\n%v\n\n", green(word))
 	for i := 0; i < len(definitions) && i <= 3; i++ {
 		if len(definitions[i].Text) == 0 {
 			continue
