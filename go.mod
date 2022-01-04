@@ -1,3 +1,3 @@
 module github.com/calebmchenry/grok
 
-go 1.16
+go 1.17

@@ -32,22 +32,33 @@ func main() {
 		panic("WORDNIK_API variable not found")
 	}
 
-	url := fmt.Sprintf("http://api.wordnik.com/v4/word.json/%v/definitions?api_key=%v", word, apiKey)
+	url := fmt.Sprintf("https://api.wordnik.com/v4/word.json/%v/definitions?api_key=%v", word, apiKey)
 
 	res, err := http.Get(url)
 	if err != nil {
-		panic("Error from request")
+		fmt.Println("Could not reach server. Are you sure you have internet connection?")
+		os.Exit(1)
+	}
+	if res.StatusCode > 500 {
+		fmt.Println("Oh no something went wrong on the other end!")
+		os.Exit(1)
+	}
+	if res.StatusCode > 400 {
+		fmt.Printf("Could not find %v.\n", word)
+		os.Exit(1)
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic("Error while reading response")
+		fmt.Printf("Oh no! There was an error while reading the response\n")
+		os.Exit(1)
 	}
 
 	var definitions []Definition
 	err = json.Unmarshal(body, &definitions)
 	if err != nil {
-		panic("Error parsing json")
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 	fmt.Printf("\n%v\n\n", word)
 	for i := 0; i < len(definitions) && i <= 3; i++ {
